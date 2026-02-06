@@ -32,8 +32,8 @@ export async function GET(request: NextRequest) {
 
         // チャンネルIDを抽出
         const channelIds = searchResults.items
-            .map(item => item.snippet.channelId)
-            .filter(Boolean);
+            .map((item: any) => item.snippet?.channelId)
+            .filter(Boolean) as string[];
 
         if (channelIds.length === 0) {
             return NextResponse.json({
@@ -48,11 +48,11 @@ export async function GET(request: NextRequest) {
 
         // 登録者数でフィルタリングして変換
         const channels = channelDetails
-            .filter(channel => {
-                const subscribers = parseInt(channel.statistics.subscriberCount, 10);
+            .filter((channel: any) => {
+                const subscribers = parseInt(channel.statistics?.subscriberCount || '0', 10);
                 return subscribers >= minSubscribers;
             })
-            .map(channel => convertYouTubeChannel(channel, 'search'));
+            .map((channel: any) => convertYouTubeChannel(channel, 'search'));
 
         return NextResponse.json({
             channels,
