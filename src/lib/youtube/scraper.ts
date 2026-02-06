@@ -35,21 +35,23 @@ export class MonetizationChecker {
 
             return {
                 isMonetized,
-                hasMembership: channelResult.hasMembership,
-                hasAds: videoResult.hasAds,
                 checkedAt: new Date().toISOString(),
-                confidence,
-                reason,
+                indicators: {
+                    hasMembership: channelResult.hasMembership,
+                    hasAds: videoResult.hasAds,
+                    hasSuperChat: false, // 現在は未実装
+                },
             };
         } catch (error) {
             console.error('Monetization check error:', error);
             return {
                 isMonetized: false,
-                hasMembership: false,
-                hasAds: false,
                 checkedAt: new Date().toISOString(),
-                confidence: 'low',
-                reason: `チェック中にエラーが発生しました: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                indicators: {
+                    hasMembership: false,
+                    hasAds: false,
+                    hasSuperChat: false,
+                },
             };
         }
     }
