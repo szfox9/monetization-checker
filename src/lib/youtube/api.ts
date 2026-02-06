@@ -222,18 +222,18 @@ export function convertYouTubeChannel(
 
     return {
         channel_id: channel.id,
-        channel_name: channel.snippet.title,
+        channel_name: channel.snippet?.title || 'Unknown Channel',
         channel_url: `https://www.youtube.com/channel/${channel.id}`,
-        custom_url: channel.snippet.customUrl,
-        thumbnail_url: channel.snippet.thumbnails.high?.url ||
-            channel.snippet.thumbnails.medium?.url ||
-            channel.snippet.thumbnails.default?.url,
-        description: channel.snippet.description,
-        subscriber_count: parseInt(channel.statistics.subscriberCount, 10) || 0,
-        video_count: parseInt(channel.statistics.videoCount, 10) || 0,
-        view_count: parseInt(channel.statistics.viewCount, 10) || 0,
-        country: channel.snippet.country,
-        published_at: channel.snippet.publishedAt,
+        custom_url: channel.snippet?.customUrl,
+        thumbnail_url: channel.snippet?.thumbnails?.high?.url ||
+            channel.snippet?.thumbnails?.medium?.url ||
+            channel.snippet?.thumbnails?.default?.url,
+        description: channel.snippet?.description,
+        subscriber_count: parseInt(channel.statistics?.subscriberCount || '0', 10),
+        video_count: parseInt(channel.statistics?.videoCount || '0', 10),
+        view_count: parseInt(channel.statistics?.viewCount || '0', 10),
+        country: channel.snippet?.country,
+        published_at: channel.snippet?.publishedAt,
         keywords,
         topic_categories: channel.topicDetails?.topicCategories,
         source,
