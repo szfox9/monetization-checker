@@ -1,6 +1,6 @@
 import {
-    YouTubeChannelResponse,
-    YouTubeSearchResponse,
+    YouTubeChannelListResponse,
+    YouTubeSearchListResponse,
     YouTubeChannel,
 } from '@/types';
 
@@ -35,7 +35,7 @@ export class YouTubeAPI {
             throw new Error(`YouTube API error: ${response.status}`);
         }
 
-        const data: YouTubeChannelResponse = await response.json();
+        const data: YouTubeChannelListResponse = await response.json();
         return data.items?.[0] || null;
     }
 
@@ -77,7 +77,7 @@ export class YouTubeAPI {
             throw new Error(`YouTube API error: ${response.status}`);
         }
 
-        const data: YouTubeChannelResponse = await response.json();
+        const data: YouTubeChannelListResponse = await response.json();
         return data.items?.[0] || null;
     }
 
@@ -89,7 +89,7 @@ export class YouTubeAPI {
         query: string,
         maxResults: number = 25,
         pageToken?: string
-    ): Promise<YouTubeSearchResponse> {
+    ): Promise<YouTubeSearchListResponse> {
         const params = new URLSearchParams({
             part: 'snippet',
             type: 'channel',
@@ -137,7 +137,7 @@ export class YouTubeAPI {
             throw new Error(`YouTube API error: ${response.status}`);
         }
 
-        const data: YouTubeChannelResponse = await response.json();
+        const data: YouTubeChannelListResponse = await response.json();
         return data.items || [];
     }
 
