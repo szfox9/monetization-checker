@@ -68,6 +68,16 @@ export class MonetizationChecker {
 
             const html = await response.text();
 
+            // デバッグ: HTMLに含まれる収益化関連のキーワードを検索
+            const keywords = ['sponsor', 'member', 'join', 'JOIN', 'membership'];
+            const foundKeywords: string[] = [];
+            keywords.forEach(keyword => {
+                if (html.toLowerCase().includes(keyword.toLowerCase())) {
+                    foundKeywords.push(keyword);
+                }
+            });
+            console.log(`[Membership Debug] Found keywords in HTML:`, foundKeywords.join(', ') || 'NONE');
+
             // メンバーシップボタンの存在を確認（元の検出パターン）
             const hasMembership =
                 html.includes('"sponsorButton"') ||
@@ -76,6 +86,11 @@ export class MonetizationChecker {
                 html.includes('sponsorshipButton');
 
             console.log(`[Membership Check] Channel ${channelId}: ${hasMembership}`);
+            console.log(`  - sponsorButton: ${html.includes('"sponsorButton"')}`);
+            console.log(`  - メンバーになる: ${html.includes('メンバーになる')}`);
+            console.log(`  - Join: ${html.includes('"Join"')}`);
+            console.log(`  - sponsorshipButton: ${html.includes('sponsorshipButton')}`);
+
             return { hasMembership };
         } catch (error) {
             console.error(`[Membership Check Error] Channel ${channelId}:`, error);
@@ -126,6 +141,16 @@ export class MonetizationChecker {
 
             const videoHtml = await videoResponse.text();
 
+            // デバッグ: HTMLに含まれる広告関連のキーワードを検索
+            const adKeywords = ['yt_ad', 'adPlacements', 'playerAds', 'ad_preroll', 'adSlots'];
+            const foundAdKeywords: string[] = [];
+            adKeywords.forEach(keyword => {
+                if (videoHtml.includes(keyword)) {
+                    foundAdKeywords.push(keyword);
+                }
+            });
+            console.log(`[Ad Debug] Found keywords in HTML:`, foundAdKeywords.join(', ') || 'NONE');
+
             // 広告関連のトークンを検索（元の検出パターン）
             const hasAds =
                 videoHtml.includes('"yt_ad"') ||
@@ -135,6 +160,12 @@ export class MonetizationChecker {
                 videoHtml.includes('"adSlots"');
 
             console.log(`[Ad Check] Channel ${channelId} Video ${videoId}: ${hasAds}`);
+            console.log(`  - yt_ad: ${videoHtml.includes('"yt_ad"')}`);
+            console.log(`  - adPlacements: ${videoHtml.includes('"adPlacements"')}`);
+            console.log(`  - playerAds: ${videoHtml.includes('"playerAds"')}`);
+            console.log(`  - ad_preroll: ${videoHtml.includes('ad_preroll')}`);
+            console.log(`  - adSlots: ${videoHtml.includes('"adSlots"')}`);
+
             return { hasAds };
         } catch (error) {
             console.error(`[Ad Check Error] Channel ${channelId}:`, error);
