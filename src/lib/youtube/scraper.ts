@@ -20,18 +20,11 @@ export class MonetizationChecker {
             // 結果を統合
             const isMonetized = channelResult.hasMembership || videoResult.hasAds;
 
-            let confidence: 'high' | 'medium' | 'low' = 'low';
-            let reason = '';
-
-            if (channelResult.hasMembership) {
-                confidence = 'high';
-                reason = 'メンバーシップ機能が有効';
-            } else if (videoResult.hasAds) {
-                confidence = 'medium';
-                reason = '動画に広告が検出されました';
-            } else {
-                reason = '収益化の明確な証拠が見つかりませんでした';
-            }
+            // デバッグログ
+            console.log(`[Monetization Check] Channel: ${channelId}`);
+            console.log(`  - Membership: ${channelResult.hasMembership}`);
+            console.log(`  - Ads: ${videoResult.hasAds}`);
+            console.log(`  - Result: ${isMonetized ? 'MONETIZED' : 'NOT MONETIZED'}`);
 
             return {
                 isMonetized,
@@ -45,7 +38,7 @@ export class MonetizationChecker {
         } catch (error) {
             console.error('Monetization check error:', error);
             return {
-                isMonetized: false,
+                isMonetized: null,
                 checkedAt: new Date().toISOString(),
                 indicators: {
                     hasMembership: false,
@@ -76,15 +69,22 @@ export class MonetizationChecker {
             const html = await response.text();
 
             // メンバーシップボタンの存在を確認
-            // "メンバーになる" または "Join" ボタン
+            // より広範なパターンで検出
             const hasMembership =
                 html.includes('"sponsorButton"') ||
                 html.includes('メンバーになる') ||
                 html.includes('"Join"') ||
-                html.includes('sponsorshipButton');
+                html.includes('sponsorshipButton') ||
+                html.includes('"JOIN"') ||
+                html.includes('channel-membership') ||
+                html.includes('membership-button') ||
+                /sponsor.{0,50}button/i.test(html) ||
+                /member.{0,30}join/i.test(html);
 
+            console.log(`[Membership Check] Channel ${channelId}: ${hasMembership}`);
             return { hasMembership };
-        } catch {
+        } catch (error) {
+            console.error(`[Membership Check Error] Channel ${channelId}:`, error);
             return { hasMembership: false };
         }
     }
@@ -132,17 +132,22 @@ export class MonetizationChecker {
 
             const videoHtml = await videoResponse.text();
 
-            // 広告関連のトークンを検索
-            // "yt_ad", "value": "1" の存在確認
+            // 広告関連のトークンをより広範に検索
             const hasAds =
                 videoHtml.includes('"yt_ad"') ||
                 videoHtml.includes('"adPlacements"') ||
                 videoHtml.includes('"playerAds"') ||
                 videoHtml.includes('ad_preroll') ||
-                videoHtml.includes('"adSlots"');
+                videoHtml.includes('"adSlots"') ||
+                videoHtml.includes('"ads"') ||
+                videoHtml.includes('adplacements') ||
+                videoHtml.includes('player-ads') ||
+                /\"ad[A-Z][a-zA-Z]*\"/.test(videoHtml);
 
+            console.log(`[Ad Check] Channel ${channelId} Video ${videoId}: ${hasAds}`);
             return { hasAds };
-        } catch {
+        } catch (error) {
+            console.error(`[Ad Check Error] Channel ${channelId}:`, error);
             return { hasAds: false };
         }
     }
