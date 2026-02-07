@@ -68,18 +68,12 @@ export class MonetizationChecker {
 
             const html = await response.text();
 
-            // メンバーシップボタンの存在を確認
-            // より広範なパターンで検出
+            // メンバーシップボタンの存在を確認（元の検出パターン）
             const hasMembership =
                 html.includes('"sponsorButton"') ||
                 html.includes('メンバーになる') ||
                 html.includes('"Join"') ||
-                html.includes('sponsorshipButton') ||
-                html.includes('"JOIN"') ||
-                html.includes('channel-membership') ||
-                html.includes('membership-button') ||
-                /sponsor.{0,50}button/i.test(html) ||
-                /member.{0,30}join/i.test(html);
+                html.includes('sponsorshipButton');
 
             console.log(`[Membership Check] Channel ${channelId}: ${hasMembership}`);
             return { hasMembership };
@@ -132,17 +126,13 @@ export class MonetizationChecker {
 
             const videoHtml = await videoResponse.text();
 
-            // 広告関連のトークンをより広範に検索
+            // 広告関連のトークンを検索（元の検出パターン）
             const hasAds =
                 videoHtml.includes('"yt_ad"') ||
                 videoHtml.includes('"adPlacements"') ||
                 videoHtml.includes('"playerAds"') ||
                 videoHtml.includes('ad_preroll') ||
-                videoHtml.includes('"adSlots"') ||
-                videoHtml.includes('"ads"') ||
-                videoHtml.includes('adplacements') ||
-                videoHtml.includes('player-ads') ||
-                /\"ad[A-Z][a-zA-Z]*\"/.test(videoHtml);
+                videoHtml.includes('"adSlots"');
 
             console.log(`[Ad Check] Channel ${channelId} Video ${videoId}: ${hasAds}`);
             return { hasAds };
