@@ -151,16 +151,19 @@ export class MonetizationChecker {
             });
             console.log(`[Ad Debug] Found keywords in HTML:`, foundAdKeywords.join(', ') || 'NONE');
 
-            // 広告関連のトークンを検索（元の検出パターン）
+            // 広告検出（他サイトの手法を参考に改善）
+            // yt_ad と value がペアで存在するか確認
+            const hasYtAdValue = videoHtml.includes('"yt_ad"') && videoHtml.includes('value');
+
             const hasAds =
-                videoHtml.includes('"yt_ad"') ||
+                hasYtAdValue ||
                 videoHtml.includes('"adPlacements"') ||
                 videoHtml.includes('"playerAds"') ||
                 videoHtml.includes('ad_preroll') ||
                 videoHtml.includes('"adSlots"');
 
             console.log(`[Ad Check] Channel ${channelId} Video ${videoId}: ${hasAds}`);
-            console.log(`  - yt_ad: ${videoHtml.includes('"yt_ad"')}`);
+            console.log(`  - yt_ad + value: ${hasYtAdValue}`);
             console.log(`  - adPlacements: ${videoHtml.includes('"adPlacements"')}`);
             console.log(`  - playerAds: ${videoHtml.includes('"playerAds"')}`);
             console.log(`  - ad_preroll: ${videoHtml.includes('ad_preroll')}`);
